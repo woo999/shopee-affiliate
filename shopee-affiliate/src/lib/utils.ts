@@ -32,3 +32,4 @@ export const CATEGORY_ICON: Record<string,string> = {
 export const CATEGORY_LABEL: Record<string,string> = {
   baby:'เด็กทารก', pet:'สัตว์เลี้ยง', beauty:'ความงาม', other:'อื่นๆ'
 };
+export const truncate = (str: string, n: number) => str.length > n ? str.slice(0, n) + '...' : str;
