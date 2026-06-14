@@ -35,7 +35,7 @@ export default function SettingsPage() {
       <div className="card space-y-4">
         <h2 className="font-semibold text-gray-900 flex items-center gap-2"><User className="w-5 h-5 text-shopee-600"/>โปรไฟล์</h2>
         <div><label className="label">ชื่อ</label><input className="input" value={name} onChange={e=>setName(e.target.value)}/></div>
-        <div><label className="label">อีเมล</label><input className="input" value={email} disabled className="input bg-gray-50 text-gray-500 cursor-not-allowed"/></div>
+       <input className="input bg-gray-50 text-gray-500 cursor-not-allowed" value={email} disabled/>
         <button onClick={save} disabled={saving} className="btn-primary">
           {saving?<Loader2 className="w-4 h-4 animate-spin"/>:<Save className="w-4 h-4"/>}บันทึก
         </button>
