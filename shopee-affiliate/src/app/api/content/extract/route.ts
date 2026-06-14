@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
     if (ogImage) mediaUrls.push(ogImage);
 
     // Video URLs
-    const videoMatches = html.matchAll(/"(https:\/\/[^"]*\.mp4[^"]*?)"/gi);
-    for (const m of videoMatches) { if (!mediaUrls.includes(m[1])) mediaUrls.push(m[1]); }
+    const videoMatches = Array.from(html.matchAll(/"(https:\/\/[^"]*\.mp4[^"]*?)"/gi));
+for (const m of videoMatches) { if (!mediaUrls.includes(m[1])) mediaUrls.push(m[1]); }
 
     // Clean text
     let text = ogDesc || ogTitle;
