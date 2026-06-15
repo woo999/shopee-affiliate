@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   const { versions, product_ids } = await request.json();
   await supabase.from('content_versions').delete().eq('content_id', params.id);
 
@@ -30,9 +31,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
-  const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const { version_id } = await request.json();
   await supabase.from('content_versions').update({ is_selected: false }).eq('content_id', params.id);
   const { data, error } = await supabase.from('content_versions').update({ is_selected: true }).eq('id', version_id).select().single();
