@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function GET(request: NextRequest) {
-  const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const upcoming = new URL(request.url).searchParams.get('upcoming') === 'true';
   let query = supabase.from('schedules')
     .select(`*, content:content(id,title,platform,status,content_versions(text,is_selected))`)
@@ -16,20 +18,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const body = await request.json();
-  const { data, error } = await supabase.from('schedules').insert({ ...body, created_by: user.id }).select().single();
+  const { data, error } = await supabase.from('schedules').insert(body).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   await supabase.from('content').update({ status: 'scheduled', scheduled_at: body.scheduled_at }).eq('id', body.content_id);
   return NextResponse.json({ data }, { status: 201 });
 }
 
 export async function DELETE(request: NextRequest) {
-  const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const id = new URL(request.url).searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
   const { data: s } = await supabase.from('schedules').select('content_id').eq('id', id).single();
